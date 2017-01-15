@@ -45,8 +45,8 @@ In der `XML Datei` befinden sich die Geschwindigkeiten, welche Straßen zugeordn
 
 
 <h2> SQL </h2>
-<h3> daten_vorbereiten</h3>
-osm2pgrouting erstellt in der ways Tabelle eine Spalte mit dem namen "name". Das ist ein in `SQL` reserviertes Wort und wird deswegen umbenannt.
+<h3> daten_vorbereiten.sql</h3>
+`osm2pgrouting` erstellt in der ways Tabelle eine Spalte mit dem namen "name". Das ist ein in `SQL` reserviertes Wort und wird deswegen umbenannt.
 Des Weiteren wird zu der von `osm2pgrouting` eine Kostenspalte hinzugefügt. In diese werden später die Kostenfaktoren eingetragen, mit welcher der Algorithmus rechnet. Man könnte Alternativ auch eine Kostenfunktion schreiben, wie beispielsweise:
 
     CREATE OR REPLACE FUNCTION kosten_f(straßenklasse text, kosten double precision)
@@ -89,7 +89,7 @@ Die Funktion würde wie folgt verwendet werden
 Das ist aber rechenintensiver da diese Funktion jedes mal beim Ausführen des Routingalogrithmusses ausgeführt werden muss. Wenn die Kosten direkt in die Tabelle geschrieben werden, müssen diese nur einmal berechnet werden. Über einen Join können den einzelnen Straßen dann beim Routing die Kostenfaktoren zugeordnet werden. Joins sind in relationalen Datenbanken sehr schnell und deswegen zu bevorzugen.
 
 
-<h3>kosten_fuss / kosten_auto_weg / kosten_auto_zeit</h3>
+<h3>kosten_fuss.sql / kosten_auto_weg.sql / kosten_auto_zeit.sql</h3>
 Das Routing soll nach Möglichkeit auf designierten Fußwegen erfolgen. Dafür müssen entsprechende Straßenklassen identifiziert werden und Kosten für diese festgelgt werden.
 
 Die im Datensatz vorhanden Straßenklassen wurden mit
@@ -111,7 +111,7 @@ Alle Wege, welche beispielsweise nicht designierte Fußwege sind, bekommen sehr 
 Für die Aufschlüsselung der Kosten siehe kosten_routing.jpg
 
 
-<h3> fuss_routing / auto_weg_routing / auto_zeit_routing </h3>
+<h3> fuss_routing.sql / auto_weg_routing.sql / auto_zeit_routing.sql </h3>
 Das eigentliche Routing geschieht in diesen Dateien. Beim Routing für FußgängerInnen wurden die selbst erstellten Kostenfaktoren mit der Länge des Straßensegmentes multipliziert. Hieraus resultiert der kürzeste Weg. Dies gilt ebenfalls für das Routing mit motorisierten Fahrzeugen (kürzeste Strecke). Beim Routing für motorisierte Fahrzeuge, wo es gilt den schnellsten Weg zu finden, wurde die Zeit, welche es benötigt das Straßensegment bei gegebener Maximalgeschwindigkeit zu befahren, mit den Kostenfaktoren multipliziert.
 Die entsprechende Zeile im Code ist:
 	
@@ -137,7 +137,7 @@ Die entsprechende Zeile im Code ist:
     ORDER BY seq;
 
 
-<h3>service_areas</h3>
+<h3>service_areas.sql</h3>
 Die Funktion `catchment_areas_polygons_f()` wurde selber geschrieben. Sie vereinigt zwei `pgRouting` Funktionen, `pgr_drivingdistance()` und `pgr_pointsAsPolygon()` und automatisiert das erstellen der Polygone für Service Areas. Die native `pgr_pointsAsPolygon()` Funktion zeichnet lediglich ein Polygon. Angenommen ich möchte wissen, welche der Punkte in 60s, 120s, ... n entfernt sind, müsste ich die Funktion n mal ausführen (und jedes mal die Eingabeparameter ändern). Die hier geschriebene Funktion erledigt dies alles automatisch. Sie benötigt vier Parameter
 
 - `start_lon (numeric)`: Längengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
