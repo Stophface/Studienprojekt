@@ -1,9 +1,20 @@
 <h1> Studienprojekt </h1>
 
 Beschreibung der Code Snippets und weiteren nötigen Dateien.
-Verwendete Software: `PostgreSQL`, `PostGIS`, `osm2pgrouting`, `pgRouting`
-Visualisierung: `QGIS`
-Entwicklungsumgebung: `OSGeo-Live 10.0`
+Verwendete Software: 
+
+- `PostgreSQL`
+- `PostGIS`
+- `osm2pgrouting`
+- `pgRouting`
+
+Visualisierung: 
+
+- `QGIS`
+
+Entwicklungsumgebung: 
+
+- `OSGeo-Live 10.0`
 
 <h2> Herunterladen der Daten und erstellen der Topologie</h2>
 Zum erstellen der Topologie mittels `osm2pgrouting folgendes ausführen (`bash Shell`)
