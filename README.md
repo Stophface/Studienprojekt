@@ -1,10 +1,33 @@
 <h1> Studienprojekt </h1>
 
-Beschreibung der einzelnen SQL Scripte.
+Beschreibung der Code Snippets und weiteren nötigen Dateien.
 
-<h2> Topologie</h2>
--> xml datei
--> command line code
+<h2> Herunterladen der Daten und erstellen der Topologie</h2>
+Zum erstellen der Topologie folgendes ausführen (bash Shell)
+    # vorbereiten
+    $ mkdir ~/Desktop/foo
+    $ cd ~/Desktop/foo
+
+    # daten runterladen
+    $ CITY="NEW_YORK"
+    $ BBOX="-74.3500,40.4929,-73.5892,40.9343"
+    $ wget --progress=dot:mega -O "$CITY.osm" "http://www.overpass-api.de/api/xapi?*[bbox=${BBOX}][@meta]"
+
+    # datenbank vorbereiten
+    $ psql -U user
+    CREATE DATABASE nyc;
+    \c nyc
+    CREATE EXTENSION postgis;
+    CREATE EXTENSION pgrouting;
+    \q
+
+    $ osm2pgrouting -f NEW_YORK.osm -conf path/config.xml -d nyc -U user
+
+
+<h3>config.xml</h3>
+In der XML Datei befinden sich die Geschwindigkeiten, welche Straßen zugeordnet werden soll, falls keine Geschwindigkeit in OpenstreetMap eingetragen ist. Die Geschwindigkeiten wurden aus dem Backend von OSRM entnommen. Motorisierte Fahrzeuge: https://github.com/Project-OSRM/osrm-backend/blob/master/profiles/car.lua FußgängerInnen: https://github.com/Project-OSRM/osrm-backend/blob/master/profiles/foot.lua
+
+
 
 <h2> SQL </h2>
 <h3> daten_vorbereiten</h3>
@@ -72,21 +95,39 @@ Beschreibungen der Straßenklassen kann auf http://wiki.openstreetmap.org/wiki/K
 Alle Wege, welche beispielsweise nicht designierte Fußwege sind, bekommen sehr hohe Kosten. Feiner Abstufungen bei Wegen welche für beispielsweise FußgängerInnen zwar geeignet sind, aber eher suboptimal. Das ganz wird in eine Funktion verpackt. Besonders hervor zu heben ist, dass ab pgRouting 2.1.x Straßen, welche aus dem Routing ausgeschlossen werden sollen (wie z.B. Autobahnen für FußgängerInnen) nicht mehr mit -1, sondern mit sehr hohen Zahlen bepreist werden. 
 Für die Aufschlüsselung der Kosten siehe kosten_routing.jpg
 
+
 <h3> fuss_routing / auto_weg_routing / auto_zeit_routing </h3>
 Das eigentliche Routing geschieht in diesen Dateien. Beim Routing für FußgängerInnen wurden die selbst erstellten Kostenfaktoren mit der Länge des Straßensegmentes multipliziert. Hieraus resultiert der kürzeste Weg. Dies gilt ebenfalls für das Routing mit motorisierten Fahrzeugen (kürzeste Strecke). Beim Routing für motorisierte Fahrzeuge, wo es gilt den schnellsten Weg zu finden, wurde die Zeit, welche es benötigt das Straßensegment bei gegebener Maximalgeschwindigkeit zu befahren, mit den Kostenfaktoren multipliziert.
 Die entsprechende Zeile im Code ist:
 	
-	[...]
-    length_m * kosten_fuss AS cost
-    [...]
+    CREATE TABLE route_fuss AS
+    SELECT route.*, w.the_geom, w.length_m FROM pgr_dijkstra('
+        SELECT gid AS id,
+            source,
+            target,
+            length_m * kosten_fuss AS cost -- Verwendung der Kostenspalte
+        FROM ways
+        JOIN osm_way_classes
+        ON ways.class_id = osm_way_classes.class_id',
+        pgr_pointToEdgeNode('ways', ST_SetSRID(
+					ST_Point(-73.930397, 40.783351),
+					4326), 0.01
+			),
+			pgr_pointToEdgeNode('ways', ST_SetSRID(
+					ST_Point(-73.882022, 40.852214),
+					4326), 0.01),
+		directed := false) AS route
+    LEFT JOIN ways w
+    ON route.edge = w.gid
+    ORDER BY seq;
 
 
+<h3>service_areas</h3>
+Die Funktion catchment_areas_polygons_f() wurde selber geschrieben. Sie vereinigt zwei pgRouting Funktionen, pgr_drivingdistance() und pgr_pointsAsPolygon() und automatisiert das erstellen der Polygone für Servce Areas. Die Funktion akzeptiert vier Parameter
 
+- start_lon (numeric): Längengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
+- start_lat (numeric): Breitengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
+- fahrtzeit_s (integer): Wie weit soll der am weitesten entfernte Punkt (in Sekunden) vom Zentrum der Service Areas (also start_lon/start_lat) entfernt sein?
+- isolinien_s: In welchen Schritten/Abständen (in Sekunden) sollen die Isolinien eingezeichnet werden. 
 
-
-
-
-
-
-
-
+Die Funktion zeichnet keine wirklichen Isolinien. Sie gibt stattdessen für jeden Schritt, z.B. 60s, 120s, ... ein Polygon zurück. So kann genau identifiziert werden, welche Punkte innerhalb des Polygones liegen und somit erreichbar sind. 
