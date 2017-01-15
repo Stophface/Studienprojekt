@@ -3,7 +3,7 @@
 Beschreibung der Code Snippets und weiteren nötigen Dateien.
 
 <h2> Herunterladen der Daten und erstellen der Topologie</h2>
-Zum erstellen der Topologie folgendes ausführen (bash Shell)
+Zum erstellen der Topologie folgendes ausführen (`bash Shell`)
     # vorbereiten
     $ mkdir ~/Desktop/foo
     $ cd ~/Desktop/foo
@@ -25,14 +25,14 @@ Zum erstellen der Topologie folgendes ausführen (bash Shell)
 
 
 <h3>config.xml</h3>
-In der XML Datei befinden sich die Geschwindigkeiten, welche Straßen zugeordnet werden soll, falls keine Geschwindigkeit in OpenstreetMap eingetragen ist. Die Geschwindigkeiten wurden aus dem Backend von OSRM entnommen. Motorisierte Fahrzeuge: https://github.com/Project-OSRM/osrm-backend/blob/master/profiles/car.lua FußgängerInnen: https://github.com/Project-OSRM/osrm-backend/blob/master/profiles/foot.lua
+In der `XML Datei` befinden sich die Geschwindigkeiten, welche Straßen zugeordnet werden soll, falls keine Geschwindigkeit in OpenstreetMap eingetragen ist. Die Geschwindigkeiten wurden aus dem Backend von OSRM entnommen. Motorisierte Fahrzeuge: https://github.com/Project-OSRM/osrm-backend/blob/master/profiles/car.lua FußgängerInnen: https://github.com/Project-OSRM/osrm-backend/blob/master/profiles/foot.lua
 
 
 
 <h2> SQL </h2>
 <h3> daten_vorbereiten</h3>
-osm2pgrouting erstellt in der ways Tabelle eine Spalte mit dem namen "name". Das ist ein in SQL reserviertes Wort und wird deswegen umbenannt.
-Des Weiteren wird zu der von osm2pgrouting eine Kostenspalte hinzugefügt. In diese werden später die Kostenfaktoren eingetragen, mit welcher der Algorithmus rechnet. Man könnte Alternativ auch eine Kostenfunktion schreiben, wie beispielsweise:
+osm2pgrouting erstellt in der ways Tabelle eine Spalte mit dem namen "name". Das ist ein in `SQL` reserviertes Wort und wird deswegen umbenannt.
+Des Weiteren wird zu der von `osm2pgrouting` eine Kostenspalte hinzugefügt. In diese werden später die Kostenfaktoren eingetragen, mit welcher der Algorithmus rechnet. Man könnte Alternativ auch eine Kostenfunktion schreiben, wie beispielsweise:
 
     CREATE OR REPLACE FUNCTION kosten_f(straßenklasse text, kosten double precision)
     RETURNS integer AS
@@ -92,7 +92,7 @@ ermittelt.
     "grade1", "grade2", "grade3", "grade4", "grade5", "roundabout"
 
 Beschreibungen der Straßenklassen kann auf http://wiki.openstreetmap.org/wiki/Key:highway nachgelesen werden.
-Alle Wege, welche beispielsweise nicht designierte Fußwege sind, bekommen sehr hohe Kosten. Feiner Abstufungen bei Wegen welche für beispielsweise FußgängerInnen zwar geeignet sind, aber eher suboptimal. Das ganz wird in eine Funktion verpackt. Besonders hervor zu heben ist, dass ab pgRouting 2.1.x Straßen, welche aus dem Routing ausgeschlossen werden sollen (wie z.B. Autobahnen für FußgängerInnen) nicht mehr mit -1, sondern mit sehr hohen Zahlen bepreist werden. 
+Alle Wege, welche beispielsweise nicht designierte Fußwege sind, bekommen sehr hohe Kosten. Feiner Abstufungen bei Wegen welche für beispielsweise FußgängerInnen zwar geeignet sind, aber eher suboptimal. Das ganz wird in eine Funktion verpackt. Besonders hervor zu heben ist, dass ab `pgRouting 2.1.x` Straßen, welche aus dem Routing ausgeschlossen werden sollen (wie z.B. Autobahnen für FußgängerInnen) nicht mehr mit -1, sondern mit sehr hohen Zahlen bepreist werden. 
 Für die Aufschlüsselung der Kosten siehe kosten_routing.jpg
 
 
@@ -123,7 +123,7 @@ Die entsprechende Zeile im Code ist:
 
 
 <h3>service_areas</h3>
-Die Funktion catchment_areas_polygons_f() wurde selber geschrieben. Sie vereinigt zwei pgRouting Funktionen, pgr_drivingdistance() und pgr_pointsAsPolygon() und automatisiert das erstellen der Polygone für Servce Areas. Die native pgr_pointsAsPolygon() Funktion zeichnet lediglich ein Polygon. Angenommen ich möchte wissen, welche der Punkte in 60s, 120s, ... n entfernt sind, müsste ich die Funktion n mal ausführen (und jedes mal die Eingabeparameter ändern). Die hier geschriebene Funktion erledigt dies alles automatisch. Sie benötigt vier Parameter
+Die Funktion `catchment_areas_polygons_f()` wurde selber geschrieben. Sie vereinigt zwei `pgRouting` Funktionen, `pgr_drivingdistance()` und `pgr_pointsAsPolygon()` und automatisiert das erstellen der Polygone für Service Areas. Die native `pgr_pointsAsPolygon()` Funktion zeichnet lediglich ein Polygon. Angenommen ich möchte wissen, welche der Punkte in 60s, 120s, ... n entfernt sind, müsste ich die Funktion n mal ausführen (und jedes mal die Eingabeparameter ändern). Die hier geschriebene Funktion erledigt dies alles automatisch. Sie benötigt vier Parameter
 
 - `start_lon (numeric)`: Längengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
 - `start_lat (numeric)`: Breitengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
