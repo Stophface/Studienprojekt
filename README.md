@@ -123,11 +123,11 @@ Die entsprechende Zeile im Code ist:
 
 
 <h3>service_areas</h3>
-Die Funktion catchment_areas_polygons_f() wurde selber geschrieben. Sie vereinigt zwei pgRouting Funktionen, pgr_drivingdistance() und pgr_pointsAsPolygon() und automatisiert das erstellen der Polygone für Servce Areas. Die Funktion akzeptiert vier Parameter
+Die Funktion catchment_areas_polygons_f() wurde selber geschrieben. Sie vereinigt zwei pgRouting Funktionen, pgr_drivingdistance() und pgr_pointsAsPolygon() und automatisiert das erstellen der Polygone für Servce Areas. Die native pgr_pointsAsPolygon() Funktion zeichnet lediglich ein Polygon. Angenommen ich möchte wissen, welche der Punkte in 60s, 120s, ... n entfernt sind, müsste ich die Funktion n mal ausführen (und jedes mal die Eingabeparameter ändern). Die hier geschriebene Funktion erledigt dies alles automatisch. Sie benötigt vier Parameter
 
-- start_lon (numeric): Längengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
-- start_lat (numeric): Breitengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
-- fahrtzeit_s (integer): Wie weit soll der am weitesten entfernte Punkt (in Sekunden) vom Zentrum der Service Areas (also start_lon/start_lat) entfernt sein?
-- isolinien_s: In welchen Schritten/Abständen (in Sekunden) sollen die Isolinien eingezeichnet werden. 
+- `start_lon (numeric)`: Längengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
+- `start_lat (numeric)`: Breitengrad des Punktes, um welchen die Service Areas bestimmt werden sollen
+- `fahrtzeit_s (integer)`: Wie weit soll der am weitesten entfernte Punkt (in Sekunden) vom Zentrum der Service Areas (also start_lon/start_lat) entfernt sein?
+- `isolinien_s`: In welchen Schritten/Abständen (in Sekunden) sollen die Isolinien eingezeichnet werden. 
 
 Die Funktion zeichnet keine wirklichen Isolinien. Sie gibt stattdessen für jeden Schritt, z.B. 60s, 120s, ... ein Polygon zurück. So kann genau identifiziert werden, welche Punkte innerhalb des Polygones liegen und somit erreichbar sind. 
