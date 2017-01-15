@@ -16,6 +16,10 @@ Entwicklungsumgebung:
 
 - `OSGeo-Live 10.0`
 
+Datengrundlage: 
+
+- `OpenstreetMap`
+
 <h2> Herunterladen der Daten und erstellen der Topologie</h2>
 Zum erstellen der Topologie mittels `osm2pgrouting folgendes ausführen (`bash Shell`)
 
