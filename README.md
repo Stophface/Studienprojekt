@@ -3,7 +3,7 @@
 Beschreibung der Code Snippets und weiteren nötigen Dateien.
 
 <h2> Herunterladen der Daten und erstellen der Topologie</h2>
-Zum erstellen der Topologie folgendes ausführen (`bash Shell`)
+Zum erstellen der Topologie mittels `osm2pgrouting` folgendes ausführen (`bash Shell`)
 
     # vorbereiten
     $ mkdir ~/Desktop/foo
