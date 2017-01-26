@@ -82,7 +82,7 @@ Die Funktion zeichnet keine wirklichen Isolinien. Sie gibt stattdessen für jede
 
 
 <h2> Alternative Vorgehensweise am Beispiels schnellster Weg </h2>
-Das Routing soll nach Möglichkeit auf designierten Fußwegen erfolgen. Dafür müssen entsprechende Straßenklassen identifiziert werden und Kosten für diese festgelgt werden.
+Das Routing soll nur auf geeigneten Straßen erfolgen. Dafür müssen entsprechende Straßenklassen identifiziert werden und Kosten für diese festgelgt werden.
 
 Die im Datensatz vorhanden Straßenklassen wurden mit
 
