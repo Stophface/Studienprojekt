@@ -14,7 +14,7 @@ SELECT route.*, w.the_geom, w.length_m FROM pgr_dijkstra(
 					4326), 0.01
 			), 
     pgr_pointToEdgeNode('ways', ST_SetSRID(
-					ST_Point(-73.98863610, 40.77412020), 
+					ST_Point(-73.98741310, 40.77359400), 
 					4326), 0.01),
     directed := true) AS route
 LEFT JOIN ways w
