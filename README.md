@@ -99,7 +99,7 @@ ermittelt.
     "grade1", "grade2", "grade3", "grade4", "grade5", "roundabout"
 
 Beschreibungen der Straßenklassen kann auf http://wiki.openstreetmap.org/wiki/Key:highway nachgelesen werden.
-Alle Wege, welche beispielsweise nicht designierte Fußwege sind, bekommen sehr hohe Kosten. Feiner Abstufungen bei Wegen welche für beispielsweise FußgängerInnen zwar geeignet sind, aber eher suboptimal. Das ganz wird in eine Funktion gewrapped welche später im `ALIAS` der `cost` bzw. `reverse_cost` verwendet wird. 
+Alle Wege, welche beispielsweise nicht designierte Fahrzeugstraßen sind, bekommen die Kosten `-1`. Somit werden diese Straßen beim Routing komplett (!) vermieden. Feiner Abstufungen bei Wegen mit eher supptimaler Oberflächenqualität (wenn das schnellste Routing vorgenommen werden soll) wird hier am Beispiel `grade1-grade2` vorgenommen. Das ganz wird in eine Funktion gewrapped welche später im `ALIAS` der `cost` bzw. `reverse_cost` verwendet wird. 
 
     CREATE OR REPLACE FUNCTION kosten_auto_zeit_f(
     strKlassen text)
@@ -117,15 +117,15 @@ Alle Wege, welche beispielsweise nicht designierte Fußwege sind, bekommen sehr 
         WHEN $1 IN ('path', 'footway', 'pedestrian', 'track', 'steps', 
         'cycleway') THEN RETURN -1.0;
     
-        WHEN $1 IN ('grade1') THEN RETURN 6.2;
+        WHEN $1 IN ('grade1') THEN RETURN 2.0;
 
-        WHEN $1 IN ('grade2') THEN RETURN 6.4;
+        WHEN $1 IN ('grade2') THEN RETURN 6.0;
 
-        WHEN $1 IN ('grade3') THEN RETURN 6.6;
+        WHEN $1 IN ('grade3') THEN RETURN 7.0;
 
-        WHEN $1 IN ('grade4') THEN RETURN 6.8;
+        WHEN $1 IN ('grade4') THEN RETURN 8.0;
 
-        WHEN $1 IN ('grade5') THEN RETURN 8.0;
+        WHEN $1 IN ('grade5') THEN RETURN 9.0;
 
         WHEN $1 IN ('unclassified') THEN RETURN -1.0;
 
@@ -137,8 +137,7 @@ Alle Wege, welche beispielsweise nicht designierte Fußwege sind, bekommen sehr 
     language 'plpgsql';
 
 
-Es wird überprüft, ob die Straßenklasse des Weges eine der Straßenkasen im `array` ist. Ist dies der Fall, so wir der entsprechende Kostenfaktor zurückgegeben.
-Beim Routing wurden dann die selbst erstellten Kostenfaktoren mit der Länge des Straßensegmentes bzw. der Zeit, welche benötigt wird, um dieses Segment zu passieren, multipliziert. Hieraus resultiert der beste Weg, abhängig von den Kosten. 
+Es wird überprüft, ob die Straßenklasse des Weges, welcher der `pgRouting` Algorithmus identifiziert, einer der Straßenkasen im `array` ist. Ist dies der Fall, so wir der entsprechende Kostenfaktor zurückgegeben. Beim Routing werden dann die selbst erstellten Kostenfaktoren mit der Länge des Straßensegmentes bzw. der Zeit, welche benötigt wird, um dieses Segment zu passieren, multipliziert. Hieraus resultiert der beste Weg, abhängig von den Kosten. 
 
 
     SELECT route.*, w.the_geom, w.length_m FROM pgr_dijkstra('
