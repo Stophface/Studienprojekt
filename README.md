@@ -21,7 +21,7 @@ Datengrundlage:
 - `OpenstreetMap`
 
 <h2> Herunterladen der Daten und erstellen der Topologie</h2>
-Zum erstellen der Topologie mittels `osm2pgrouting folgendes ausführen (`bash Shell`)
+Zum erstellen der Topologie mittels `osm2pgrouting` folgendes ausführen (`bash Shell`)
 
 Daten herunterladen mittels `xapi` von `OpenstreetMap`. 
 
